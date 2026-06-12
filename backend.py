@@ -73,7 +73,8 @@ def upload():
         return jsonify({
             'success': True,
             'id': file_id,
-            'url': file_url
+            'url': file_url,
+            'gast_used': gast_name if 'gast_name' in locals() else 'ERROR'
         })
 
     except Exception as e:
