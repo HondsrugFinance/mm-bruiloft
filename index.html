@@ -269,11 +269,23 @@
   }
 
   document.getElementById("installatie-knop").addEventListener("click", async () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt = null;
+      document.getElementById("installatie-modal").classList.add("verborgen");
+    } else if (isIOS) {
+      alert("📱 Tik op Delen (pijltje omhoog) → Scroll en kies 'Zet op beginscherm'");
+      document.getElementById("installatie-modal").classList.add("verborgen");
+    } else if (isAndroid) {
+      alert("📱 Tik op het menu (drie puntjes ⋮) rechtsboven → Kies 'App installeren'");
+      document.getElementById("installatie-modal").classList.add("verborgen");
+    } else {
+      alert("📱 Klik op het menu in je browser → Kies 'App installeren' of 'Toevoegen aan beginscherm'");
+      document.getElementById("installatie-modal").classList.add("verborgen");
     }
-    document.getElementById("installatie-modal").classList.add("verborgen");
   });
 
   document.getElementById("installatie-skip").addEventListener("click", () => {
