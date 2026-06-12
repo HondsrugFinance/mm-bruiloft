@@ -44,8 +44,8 @@ def upload():
                 timestamp = bestandsnaam.split('_')[0] if '_' in bestandsnaam else str(int(datetime.now().timestamp() * 1000))
                 counter = bestandsnaam.split('_')[1].replace('.jpg', '') if '_' in bestandsnaam else '1'
 
-                # Single public_id - everything in one folder
-                public_id = f"bruiloft_fotos/{gast_name}_{timestamp}_{counter}"
+                # Single public_id - no slashes to avoid folder creation
+                public_id = f"{gast_name}_{timestamp}_{counter}"
 
                 result = cloudinary.uploader.upload(
                     io.BytesIO(file_bytes),
