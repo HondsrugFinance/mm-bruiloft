@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mike & Martine — 20 juni 2026</title>
+  <meta name="theme-color" content="#F6F1E6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      background: #F6F1E6;
+      color: #1D1C19;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      font-size: 16px;
+    }
+    .scherm { width: 100%; max-width: 460px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 30px 20px; }
+    .titel { font-size: 48px; font-weight: 500; margin: 20px 0 8px; letter-spacing: 1px; }
+    .subtitel { font-size: 18px; color: #5C5C5C; margin: 0 0 30px; line-height: 1.4; }
+    .knop { font-family: inherit; background: #1D1C19; color: #F6F1E6; border: none; padding: 14px 30px; font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin: 10px 0; }
+    .knop:disabled { opacity: 0.5; cursor: not-allowed; }
+    input[type="text"] { font-family: inherit; font-size: 18px; text-align: center; background: transparent; border: none; border-bottom: 1px solid #1D1C19; padding: 10px; width: 90%; max-width: 300px; color: #1D1C19; margin: 20px 0; }
+    input[type="text"]:focus { outline: none; border-bottom: 2px solid #1D1C19; }
+    .vulling { flex: 1; }
+    .voet { margin-top: auto; padding-top: 30px; font-size: 12px; color: #5C5C5C; letter-spacing: 1.5px; text-transform: uppercase; }
+    .verborgen { display: none !important; }
+    .teller { width: 100%; max-width: 280px; margin: 30px auto 0; }
+    .teller-lijn { height: 1px; background: #1D1C19; margin: 20px 0 10px; position: relative; }
+    .teller-punt { position: absolute; top: -5px; width: 2px; height: 11px; background: #1D1C19; transition: left 0.3s ease; }
+    .teller-labels { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #5C5C5C; }
+    .camera-knop { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #1D1C19; background: #1D1C19; cursor: pointer; margin: 30px 0; display: flex; align-items: center; justify-content: center; }
+    .camera-knop svg { stroke: #F6F1E6; stroke-width: 1.5; }
+    .camera-knop:active { opacity: 0.8; }
+    .status { min-height: 18px; font-size: 14px; color: #5C5C5C; margin: 15px 0; }
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .modal.verborgen { display: none; }
+    .modal-inhoud { background: #F6F1E6; padding: 30px 24px; border-radius: 6px; max-width: 360px; text-align: center; }
+    .modal-inhoud h2 { font-size: 28px; margin-bottom: 15px; }
+    .modal-inhoud p { color: #5C5C5C; line-height: 1.6; margin-bottom: 20px; }
+    .modal-knoppen { display: flex; flex-direction: column; gap: 10px; }
+  </style>
+</head>
+<body>
+
+<div id="installatie-modal" class="modal verborgen">
+  <div class="modal-inhoud">
+    <h2>📱 App installeren</h2>
+    <p id="installatie-tekst">Zet deze app op je beginscherm.</p>
+    <div class="modal-knoppen">
+      <button class="knop" id="installatie-knop">Installeren</button>
+      <button class="knop" style="background: #F6F1E6; color: #1D1C19; border: 1px solid #1D1C19;" id="installatie-skip">Later</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHERM 1: NAAM -->
+<div id="scherm-naam" class="scherm">
+  <h1 class="titel">M & M</h1>
+  <p class="subtitel">We zijn getrouwd!<br>Maak 10 foto's van vandaag.</p>
+  <div class="vulling"></div>
+  <input type="text" id="invoer-naam" placeholder="Je naam" autocomplete="name" maxlength="50">
+  <button class="knop" id="knop-start">Begin →</button>
+  <div class="vulling"></div>
+  <div class="voet">Mike & Martine • 20 juni 2026</div>
+</div>
+
+<!-- SCHERM 2: CAMERA -->
+<div id="scherm-camera" class="scherm verborgen">
+  <h1 class="titel" id="groet">Veel plezier!</h1>
+  <div class="vulling"></div>
+  <button class="camera-knop" id="knop-foto" aria-label="Maak foto">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+      <path d="M3 8h3l2-3h8l2 3h3v11H3z"></path>
+      <circle cx="12" cy="13" r="3.5"></circle>
+    </svg>
+  </button>
+  <div class="status" id="status"></div>
+  <div class="teller">
+    <div class="teller-labels"><span>Foto</span><span id="teller-aantal">0 van 10</span></div>
+    <div class="teller-lijn"><div class="teller-punt" id="teller-punt"></div></div>
+  </div>
+  <input type="file" id="invoer-foto" accept="image/*" capture="environment" class="verborgen">
+  <div class="vulling"></div>
+  <div class="voet">Terugkijken kan niet.<br>Dat is de charme.</div>
+</div>
+
+<!-- SCHERM 3: KLAAR -->
+<div id="scherm-klaar" class="scherm verborgen">
+  <div class="vulling"></div>
+  <h1 class="titel" style="font-size: 42px;">✓</h1>
+  <p class="subtitel" style="font-size: 20px;">Bedankt!<br>Je 10 foto's zijn binnen.</p>
+  <div class="vulling"></div>
+  <div class="voet">Mike & Martine • 20 juni 2026</div>
+</div>
+
+<script>
+(async function() {
+  const API_URL = "https://script.google.com/macros/s/AKfycbwLsNgeHQfSZTkSO4goNO5oI9u9fBMwVn4mtdb7Q7DHoDx1x3qVemqPCngBkAfzDNcU/exec";
+  const MAX_FOTOS = 10;
+
+  let naam = localStorage.getItem("mm_naam") || "";
+  let apparaat = localStorage.getItem("mm_apparaat");
+  if (!apparaat) {
+    apparaat = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
+    localStorage.setItem("mm_apparaat", apparaat);
+  }
+  let teller = parseInt(localStorage.getItem("mm_teller") || "0", 10);
+
+  function scherm(id) {
+    document.querySelectorAll(".scherm").forEach(s => s.classList.add("verborgen"));
+    document.getElementById(id).classList.remove("verborgen");
+  }
+
+  function updateTeller() {
+    document.getElementById("teller-aantal").textContent = Math.min(teller, MAX_FOTOS) + " van " + MAX_FOTOS;
+    document.getElementById("teller-punt").style.left = (Math.min(teller, MAX_FOTOS) / MAX_FOTOS * 100) + "%";
+  }
+
+  function init() {
+    updateTeller();
+    if (naam && teller >= MAX_FOTOS) scherm("scherm-klaar");
+    else if (naam) {
+      document.getElementById("groet").textContent = "Veel plezier, " + naam.split(" ")[0] + "!";
+      scherm("scherm-camera");
+    }
+  }
+
+  document.getElementById("knop-start").addEventListener("click", () => {
+    const input = document.getElementById("invoer-naam").value.trim();
+    if (!input) return;
+    naam = input;
+    localStorage.setItem("mm_naam", naam);
+    document.getElementById("groet").textContent = "Veel plezier, " + naam.split(" ")[0] + "!";
+    scherm("scherm-camera");
+  });
+
+  document.getElementById("knop-foto").addEventListener("click", () => {
+    if (teller >= MAX_FOTOS) return;
+    document.getElementById("invoer-foto").click();
+  });
+
+  document.getElementById("invoer-foto").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    teller++;
+    localStorage.setItem("mm_teller", String(teller));
+    updateTeller();
+    document.getElementById("status").textContent = "Uploading...";
+
+    try {
+      const blob = await compressImage(file);
+      const base64 = await blobToBase64(blob);
+      const result = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          file: base64,
+          gast: naam,
+          apparaat: apparaat,
+          naam: Date.now() + "_" + teller + ".jpg"
+        })
+      });
+      const data = await result.json();
+      if (!data.success) throw new Error(data.error);
+      console.log("✓ Uploaded: " + data.pad);
+      document.getElementById("status").textContent = "";
+    } catch (err) {
+      console.error("Upload failed:", err);
+      document.getElementById("status").textContent = "❌ Error";
+      return;
+    }
+
+    if (teller >= MAX_FOTOS) {
+      setTimeout(() => scherm("scherm-klaar"), 800);
+    } else {
+      setTimeout(() => { document.getElementById("status").textContent = ""; }, 2000);
+    }
+  });
+
+  function compressImage(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let { width: w, height: h } = img;
+          const MAX = 2000;
+          if (Math.max(w, h) > MAX) {
+            const ratio = MAX / Math.max(w, h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          canvas.toBlob(resolve, "image/jpeg", 0.85);
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(e.target.result.split(",")[1]);
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // Install prompt
+  let deferredPrompt;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallPrompt();
+  });
+
+  function showInstallPrompt() {
+    const modal = document.getElementById("installatie-modal");
+    const tekst = document.getElementById("installatie-tekst");
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    if (isIOS) {
+      tekst.innerHTML = "📱 Tik <strong>Delen</strong> (⬆️) → <strong>Zet op beginscherm</strong>";
+    } else if (isAndroid) {
+      tekst.innerHTML = "📱 Tik menu (:) → <strong>App installeren</strong>";
+    }
+    modal.classList.remove("verborgen");
+  }
+
+  document.getElementById("installatie-knop").addEventListener("click", async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt = null;
+    }
+    document.getElementById("installatie-modal").classList.add("verborgen");
+  });
+
+  document.getElementById("installatie-skip").addEventListener("click", () => {
+    document.getElementById("installatie-modal").classList.add("verborgen");
+  });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+
+  init();
+})();
+</script>
+
+</body>
+</html>
