@@ -109,6 +109,9 @@
   const API_URL = "https://mm-bruiloft-api.onrender.com/upload";
   const MAX_FOTOS = 10;
 
+  // Wake up Render on load (free tier sleeps)
+  fetch("https://mm-bruiloft-api.onrender.com/health").catch(() => {});
+
   let naam = localStorage.getItem("mm_naam") || "";
   let apparaat = localStorage.getItem("mm_apparaat");
   if (!apparaat) {
@@ -162,6 +165,10 @@
     try {
       const blob = await compressImage(file);
       const base64 = await blobToBase64(blob);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+
       const result = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({
@@ -169,8 +176,11 @@
           gast: naam,
           apparaat: apparaat,
           naam: Date.now() + "_" + teller + ".jpg"
-        })
+        }),
+        signal: controller.signal
       });
+      clearTimeout(timeout);
+
       const data = await result.json();
       if (!data.success) throw new Error(data.error);
       console.log("✓ Uploaded: " + data.pad);
