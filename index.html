@@ -186,7 +186,8 @@
 
       const data = await result.json();
       if (!data.success) throw new Error(data.error);
-      console.log("✓ Uploaded: " + data.pad);
+      console.log("✓ Uploaded:", data);
+      console.log("Gast used:", data.gast_used);
       document.getElementById("status").textContent = "✓ Opgeslagen";
     } catch (err) {
       console.error("Upload failed:", err);
