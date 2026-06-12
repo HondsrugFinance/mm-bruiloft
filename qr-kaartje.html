@@ -102,10 +102,20 @@
     }
 
     @media print {
-      body { background: #fff; padding: 0; }
+      body { background: #F6F1E6; padding: 0; }
       .balk { display: none; }
-      .kaartje { box-shadow: none; }
-      @page { size: A6; margin: 0; }
+      .kaartje {
+        box-shadow: none;
+        background: #F6F1E6 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+      }
+      .rand {
+        background: #F6F1E6 !important;
+        border-color: #1D1C19 !important;
+      }
+      @page { size: A6; margin: 0; background: #F6F1E6; }
     }
   </style>
 </head>
