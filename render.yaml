@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: mm-bruiloft-api
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn backend:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: GOOGLE_CREDENTIALS
+        sync: false
+      - key: SPREADSHEET_ID
+        sync: false
