@@ -1,62 +1,56 @@
-# Setup Instructies — Mike & Martine Foto App
+# Setup — Mike & Martine Foto App
 
-## Fase 1: Google Drive Credentials (5 min)
+**Minimale setup!** Alleen Cloudinary (gratis).
 
-1. **Google Cloud Console:** https://console.cloud.google.com
-2. New Project → "MM Bruiloft"
-3. **Enable APIs:**
-   - Search "Google Drive API" → Enable
-   - Search "Google Sheets API" → Enable
-4. **Service Account:**
-   - Ga naar "Service Accounts"
-   - Create Service Account → "mm-bruiloft"
-   - Grant access: "Editor"
-5. **Keys:**
-   - Click account → "Keys" tab
-   - Add Key → JSON
-   - **Save het JSON bestand** (dit is je `GOOGLE_CREDENTIALS`)
+## 1. Cloudinary Account (2 min)
 
-## Fase 2: Deploy op Render (5 min)
+1. Go to: https://cloudinary.com/users/register/free
+2. Sign up (gratis)
+3. Dashboard → **Environment Variable kopieëren** (iets als: `cloudinary://123456:abc@xyz`)
 
-1. **Render.com:** https://render.com (login/signup)
-2. **New Web Service** → Connect GitHub repo: `HondsrugFinance/mm-bruiloft`
-3. **Settings:**
-   - Name: `mm-bruiloft-api`
-   - Runtime: Python
-   - Build: `pip install -r requirements.txt`
-   - Start: `gunicorn backend:app`
-4. **Environment Variables:**
-   - `GOOGLE_CREDENTIALS` = **Inhoud van je JSON bestand** (copy-paste hele file)
-   - `SPREADSHEET_ID` = (laat leeg voor nu, optional)
-5. Deploy!
-6. **Kopieer de URL** (bijv: `https://mm-bruiloft-api.onrender.com`)
+## 2. Deploy op Render (3 min)
 
-## Fase 3: Update Frontend URL (2 min)
+1. https://render.com → New Web Service
+2. Connect GitHub: `HondsrugFinance/mm-bruiloft`
+3. Settings:
+   - **Name:** `mm-bruiloft-api`
+   - **Runtime:** Python
+   - **Build:** `pip install -r requirements.txt`
+   - **Start:** `gunicorn backend:app`
+4. **Environment Variable:**
+   - Key: `CLOUDINARY_URL`
+   - Value: Plak je Cloudinary Environment Variable (uit stap 1)
+5. **Deploy!**
+6. Kopieer de Render URL (bijv: `https://mm-bruiloft-api.onrender.com`)
 
-1. **index.html** → Regel ~51:
+## 3. Update Frontend (2 min)
+
+In **index.html** regel ~51, vervang de API_URL:
 ```javascript
 const API_URL = "https://mm-bruiloft-api.onrender.com/upload";
 ```
-(vervang met jouw Render URL)
 
-2. Commit & push naar GitHub
+Commit & push naar GitHub.
 
-## Fase 4: Test (1 min)
+## 4. Test! (1 min)
 
-- App: https://hondsrugfinance.github.io/mm-bruiloft/
-- Voer naam in → Maak foto → Check Google Drive `MM_Bruiloft_Fotos` folder
+- Open: https://hondsrugfinance.github.io/mm-bruiloft/
+- Voer naam in
+- Maak foto
+- Check Cloudinary dashboard → Media Library → mm-bruiloft folder
 
-## (Optional) Google Sheet Logging
+## Stats Endpoint
 
-Wil je foto metadata in een Google Sheet?
+Backend biedt ook een stats endpoint:
+```
+https://mm-bruiloft-api.onrender.com/stats
+```
 
-1. Create Google Sheet → Zet kolommen: "Datum", "Gast", "Apparaat", "Bestand", "Drive ID"
-2. Copy de Sheet ID (URL: `/spreadsheets/d/SHEET_ID/edit`)
-3. Render env var: `SPREADSHEET_ID = SHEET_ID`
-4. Restart Render service
+Dit toont totaal fotos, unique devices, en gast namen.
 
 ## Troubleshooting
 
-- **"Google Drive not configured"** → Check GOOGLE_CREDENTIALS env var
-- **Folder niet zichtbaar** → Service account email moet Drive access hebben
+- **"Upload failed"** → Check Cloudinary URL in Render env vars
+- **Fotos niet zichtbaar** → Wacht 1 min op Cloudinary sync
 - **App URL zwart** → Wacht 1 min op GitHub Pages deploy
+- **API error** → Check Render logs: `https://dashboard.render.com`
