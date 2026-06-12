@@ -264,9 +264,13 @@
     deferredPrompt = e;
   });
 
-  // Show modal on load
+  // Show modal on load (only if NOT installed as app)
   window.addEventListener("load", () => {
-    modal.classList.remove("verborgen");
+    const isInstalled = window.navigator.standalone === true ||
+                       window.matchMedia('(display-mode: standalone)').matches;
+    if (!isInstalled) {
+      modal.classList.remove("verborgen");
+    }
   });
 
   document.getElementById("installatie-knop").addEventListener("click", async () => {
