@@ -43,7 +43,7 @@ def upload():
                 result = cloudinary.uploader.upload(
                     io.BytesIO(file_bytes),
                     resource_type='auto',
-                    folder=f'mm-bruiloft/{apparaat}',
+                    folder='mm-bruiloft',
                     public_id=bestandsnaam.replace('.jpg', ''),
                     overwrite=True
                 )
