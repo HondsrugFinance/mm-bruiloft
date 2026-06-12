@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; }
@@ -26,6 +26,9 @@
       font-size: 16px;
     }
     .scherm { width: 100%; max-width: 460px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 30px 20px; }
+    .monogram { font-size: 44px; font-weight: 500; letter-spacing: 2px; display: flex; align-items: center; gap: 12px; margin: 20px 0 6px; }
+    .monogram .bar { width: 1.5px; height: 64px; background: #1D1C19; }
+    .script { font-family: 'Pinyon Script', cursive; font-size: 26px; line-height: 1.25; color: #1D1C19; margin: 14px 0 4px; }
     .titel { font-size: 48px; font-weight: 500; margin: 20px 0 8px; letter-spacing: 1px; }
     .subtitel { font-size: 18px; color: #5C5C5C; margin: 0 0 30px; line-height: 1.4; }
     .knop { font-family: inherit; background: #1D1C19; color: #F6F1E6; border: none; padding: 14px 30px; font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin: 10px 0; }
@@ -66,8 +69,9 @@
 
 <!-- SCHERM 1: NAAM -->
 <div id="scherm-naam" class="scherm">
-  <h1 class="titel">M & M</h1>
-  <p class="subtitel">We zijn getrouwd!<br>Maak 10 foto's van vandaag.</p>
+  <div class="monogram">M<span class="bar"></span>M</div>
+  <p class="script">We zijn getrouwd!</p>
+  <p class="subtitel" style="margin-top:10px; line-height:2;">Maak 10 foto's van deze dag.<br>Wij zien ze pas na de bruiloft.</p>
   <div class="vulling"></div>
   <input type="text" id="invoer-naam" placeholder="Je naam" autocomplete="name" maxlength="50">
   <button class="knop" id="knop-start">Begin →</button>
