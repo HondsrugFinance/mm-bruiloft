@@ -109,9 +109,6 @@
   const API_URL = "https://mm-bruiloft-api.onrender.com/upload";
   const MAX_FOTOS = 10;
 
-  // Wake up Render on load (free tier sleeps)
-  fetch("https://mm-bruiloft-api.onrender.com/health").catch(() => {});
-
   let naam = localStorage.getItem("mm_naam") || "";
   let apparaat = localStorage.getItem("mm_apparaat");
   if (!apparaat) {
@@ -179,22 +176,32 @@
         }),
         signal: controller.signal
       });
+
       clearTimeout(timeout);
 
       const data = await result.json();
       if (!data.success) throw new Error(data.error);
       console.log("✓ Uploaded: " + data.pad);
-      document.getElementById("status").textContent = "";
+      document.getElementById("status").textContent = "✓ Opgeslagen";
     } catch (err) {
       console.error("Upload failed:", err);
-      document.getElementById("status").textContent = "❌ Error";
-      return;
+      document.getElementById("status").textContent = "⏳ Wachten op verbinding...";
+      // Auto-retry in 5 sec
+      setTimeout(() => {
+        if (document.getElementById("status").textContent.includes("Wachten")) {
+          document.getElementById("status").textContent = "";
+        }
+      }, 3000);
     }
 
     if (teller >= MAX_FOTOS) {
       setTimeout(() => scherm("scherm-klaar"), 800);
     } else {
-      setTimeout(() => { document.getElementById("status").textContent = ""; }, 2000);
+      setTimeout(() => {
+        if (!document.getElementById("status").textContent.includes("Wachten")) {
+          document.getElementById("status").textContent = "";
+        }
+      }, 2000);
     }
   });
 
@@ -267,6 +274,10 @@
   document.getElementById("installatie-skip").addEventListener("click", () => {
     document.getElementById("installatie-modal").classList.add("verborgen");
   });
+
+  // Wake Render on load + keep-alive
+  fetch(API_URL.replace('/upload', '/health')).catch(() => {});
+  setInterval(() => fetch(API_URL.replace('/upload', '/health')).catch(() => {}), 30000);
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
