@@ -40,12 +40,12 @@ def upload():
         # If Cloudinary configured, upload there
         if CLOUDINARY_URL and cloudinary.config().cloud_name:
             try:
-                # Unique filename: gast_timestamp_counter
-                unique_id = f"{gast.replace(' ', '_')}_{bestandsnaam.replace('.jpg', '')}"
+                # Unique filename with gast name
+                gast_clean = gast.replace(' ', '').replace(',', '').lower()[:10]
+                unique_id = f"bruiloft/{gast_clean}_{bestandsnaam.replace('.jpg', '')}"
                 result = cloudinary.uploader.upload(
                     io.BytesIO(file_bytes),
                     resource_type='auto',
-                    folder='mm-bruiloft',
                     public_id=unique_id,
                     overwrite=False
                 )
