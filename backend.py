@@ -36,16 +36,18 @@ def upload():
         except:
             return jsonify({'error': 'Invalid base64'}), 400
 
-        # Cloudinary upload - ALL IN ONE FOLDER
+        # Cloudinary upload - FLAT STRUCTURE WITH GAST NAME
         if CLOUDINARY_URL and cloudinary.config().cloud_name:
             try:
-                # Clean gast name and build complete path
-                gast_name = gast.strip().replace(' ', '_')[:15]
-                timestamp = bestandsnaam.split('_')[0] if '_' in bestandsnaam else str(int(datetime.now().timestamp() * 1000))
-                counter = bestandsnaam.split('_')[1].replace('.jpg', '') if '_' in bestandsnaam else '1'
+                # Clean gast name
+                gast_clean = gast.strip().replace(' ', '').replace(',', '').lower()
+                # Use parts from bestandsnaam (timestamp_counter)
+                parts = bestandsnaam.replace('.jpg', '').split('_')
+                ts = parts[0] if len(parts) > 0 else '0'
+                ct = parts[1] if len(parts) > 1 else '0'
 
-                # Single public_id - no slashes to avoid folder creation
-                public_id = f"{gast_name}_{timestamp}_{counter}"
+                # PUBLIC ID: ALWAYS INCLUDES GAST NAME
+                public_id = f"bruiloft_{gast_clean}_{ts}_{ct}"
 
                 result = cloudinary.uploader.upload(
                     io.BytesIO(file_bytes),
