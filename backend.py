@@ -24,12 +24,11 @@ def upload():
     try:
         data = request.json
         base64_file = data.get('file')
-        gast = data.get('gast', 'Onbekend')
-        apparaat = data.get('apparaat', 'unknown')
+        gast = data.get('gast', 'Gast')
         bestandsnaam = data.get('naam', 'foto.jpg')
 
         if not base64_file:
-            return jsonify({'error': 'Geen bestand'}), 400
+            return jsonify({'error': 'No file'}), 400
 
         # Decode base64
         try:
@@ -37,42 +36,43 @@ def upload():
         except:
             return jsonify({'error': 'Invalid base64'}), 400
 
-        # If Cloudinary configured, upload there
+        # Cloudinary upload - ALL IN ONE FOLDER
         if CLOUDINARY_URL and cloudinary.config().cloud_name:
             try:
-                # Unique filename with gast name
-                gast_clean = gast.replace(' ', '').replace(',', '').lower()[:10]
-                unique_id = f"bruiloft/{gast_clean}_{bestandsnaam.replace('.jpg', '')}"
+                # Clean gast name and build complete path
+                gast_name = gast.strip().replace(' ', '_')[:15]
+                timestamp = bestandsnaam.split('_')[0] if '_' in bestandsnaam else str(int(datetime.now().timestamp() * 1000))
+                counter = bestandsnaam.split('_')[1].replace('.jpg', '') if '_' in bestandsnaam else '1'
+
+                # Single public_id - everything in one folder
+                public_id = f"bruiloft_fotos/{gast_name}_{timestamp}_{counter}"
+
                 result = cloudinary.uploader.upload(
                     io.BytesIO(file_bytes),
                     resource_type='auto',
-                    public_id=unique_id,
+                    public_id=public_id,
                     overwrite=False
                 )
                 file_id = result.get('public_id')
                 file_url = result.get('secure_url')
             except Exception as e:
-                return jsonify({'error': f'Upload failed: {str(e)}'}), 500
+                return jsonify({'error': f'Upload error: {str(e)}'}), 500
         else:
-            # Fallback: just generate ID
-            file_id = f"{apparaat}/{bestandsnaam}"
+            file_id = f"local_{bestandsnaam}"
             file_url = None
 
-        # Log
-        entry = {
+        # Log entry
+        foto_log.append({
             'datum': datetime.now().isoformat(),
             'gast': gast,
-            'apparaat': apparaat,
             'bestand': bestandsnaam,
             'id': file_id,
             'url': file_url
-        }
-        foto_log.append(entry)
+        })
 
         return jsonify({
             'success': True,
             'id': file_id,
-            'pad': f"{apparaat}/{bestandsnaam}",
             'url': file_url
         })
 
