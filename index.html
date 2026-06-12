@@ -168,6 +168,7 @@
 
       const result = await fetch(API_URL, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           file: base64,
           gast: naam,
