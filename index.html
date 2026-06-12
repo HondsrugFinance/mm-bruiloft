@@ -246,27 +246,28 @@
     });
   }
 
-  // Install prompt
+  // Install prompt - show on load
   let deferredPrompt;
+  const modal = document.getElementById("installatie-modal");
+  const tekst = document.getElementById("installatie-tekst");
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+
+  if (isIOS) {
+    tekst.innerHTML = "📱 Tik <strong>Delen</strong> (⬆️) → <strong>Zet op beginscherm</strong>";
+  } else if (isAndroid) {
+    tekst.innerHTML = "📱 Tik menu (:) → <strong>App installeren</strong>";
+  }
+
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    showInstallPrompt();
   });
 
-  function showInstallPrompt() {
-    const modal = document.getElementById("installatie-modal");
-    const tekst = document.getElementById("installatie-tekst");
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-
-    if (isIOS) {
-      tekst.innerHTML = "📱 Tik <strong>Delen</strong> (⬆️) → <strong>Zet op beginscherm</strong>";
-    } else if (isAndroid) {
-      tekst.innerHTML = "📱 Tik menu (:) → <strong>App installeren</strong>";
-    }
+  // Show modal on load
+  window.addEventListener("load", () => {
     modal.classList.remove("verborgen");
-  }
+  });
 
   document.getElementById("installatie-knop").addEventListener("click", async () => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
