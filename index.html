@@ -254,16 +254,26 @@
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isAndroid = /Android/.test(navigator.userAgent);
 
-  if (isIOS) {
-    tekst.innerHTML = "📱 Tik <strong>Delen</strong> (⬆️) → <strong>Zet op beginscherm</strong>";
-  } else if (isAndroid) {
-    tekst.innerHTML = "📱 Tik menu (:) → <strong>App installeren</strong>";
-  }
+  let hasInstallPrompt = false;
 
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    hasInstallPrompt = true;
   });
+
+  // Set instructions based on device
+  setTimeout(() => {
+    if (isIOS) {
+      tekst.innerHTML = "📱 Tik <strong>Delen</strong> (⬆️) → <strong>Zet op beginscherm</strong>";
+    } else if (isAndroid) {
+      if (hasInstallPrompt) {
+        tekst.innerHTML = "📱 Tik de knop hieronder → App zal op je beginscherm verschijnen";
+      } else {
+        tekst.innerHTML = "📱 Je browser ondersteunt installatie helaas niet. Voeg handmatig toe: Menu → <strong>Bladwijzers</strong> → <strong>Toevoegen aan beginscherm</strong>";
+      }
+    }
+  }, 500);
 
   // Show modal on load (only if NOT installed as app)
   window.addEventListener("load", () => {
